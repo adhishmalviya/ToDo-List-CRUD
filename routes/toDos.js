@@ -14,21 +14,15 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   let toDo = {};
   if (isValidObjectId(req.params.id)) {
-    toDo = await ToDo.findById(req.params.id);
+    toDo = await ToDo.findById(req.params.id).select(
+      "_id title description dateCreated isCompleted dateCompleted"
+    );
   } else {
     res.status(404).send("Provided ID is not a valid ObjectId");
   }
 
   if (!toDo)
     return res.status(404).send("The toDo with the given ID was not found.");
-  toDo = _.pick(toDo, [
-    "_id",
-    "title",
-    "description",
-    "dateCreated",
-    "isCompleted",
-    "dateCompleted",
-  ]);
   res.send(toDo);
 });
 // Adding new todo
@@ -55,21 +49,14 @@ router.put("/:id", async (req, res) => {
       req.params.id,
       { title: req.body.title, description: req.body.description },
       { new: true }
-    );
+    ).select("_id title description dateCreated isCompleted dateCompleted");
   } else {
     res.status(404).send("Provided ID is not a valid ObjectId");
   }
 
   if (!toDo)
     return res.status(404).send("The toDo with the given ID was not found.");
-  toDo = _.pick(toDo, [
-    "_id",
-    "title",
-    "description",
-    "dateCreated",
-    "isCompleted",
-    "dateCompleted",
-  ]);
+
   res.send(toDo);
 });
 //Marking a todo complete
